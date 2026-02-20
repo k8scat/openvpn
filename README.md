@@ -51,11 +51,17 @@
 
 ```shell
 docker run -d \
+  --name openvpn \
   --cap-add=NET_ADMIN \
   -p 1194:1194/udp \
   -p 8833:8833 \
-  -v $(pwd)/data:/data \
-  yyxx/openvpn
+  -e OVPN_GATEWAY=false \
+  -e SYSTEM_BASE_ADMIN_USERNAME=admin \
+  -e SYSTEM_BASE_ADMIN_PASSWORD=admin \
+  -v /srv/openvpn/data:/data \
+  -v /srv/openvpn/logs:/var/log \
+  -v /etc/localtime:/etc/localtime:ro \
+  k8scat/openvpn:latest
 ```
 
 ### compose
@@ -70,16 +76,22 @@ docker run -d \
 
   ```yaml
   services:
-    openvpn:
-      image: yyxx/openvpn
-      cap_add:
-        - NET_ADMIN
-      ports:
-        - "1194:1194/udp"
-        - "8833:8833"
-      volumes:
-        - ./data:/data
-        - /etc/localtime:/etc/localtime:ro
+  openvpn:
+    image: k8scat/openvpn:latest
+    container_name: openvpn
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "1194:1194/udp"
+      - "8833:8833"
+    environment:
+      - SYSTEM_BASE_ADMIN_USERNAME=admin
+      - SYSTEM_BASE_ADMIN_PASSWORD=admin
+      - OVPN_GATEWAY=false # 如果是放在网关上用，需要设置为true
+    volumes:
+      - /srv/openvpn/data:/data
+      - /etc/localtime:/etc/localtime:ro
+      - /srv/openvpn/logs:/var/log
   ```
   
 - 运行 openvpn
@@ -102,7 +114,7 @@ docker run -d \
 ```bash
 services:
   openvpn:
-    image: yyxx/openvpn
+    image: k8scat/openvpn
     cap_add:
       - NET_ADMIN
     ports:
