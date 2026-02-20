@@ -1,6 +1,6 @@
 services:
   openvpn:
-    image: yyxx/openvpn
+    image: k8scat/openvpn:latest
     cap_add:
       - NET_ADMIN
     ports:
@@ -9,7 +9,8 @@ services:
     environment:
       - ADMIN_USERNAME=admin
       - ADMIN_PASSWORD=admin
-      - OVPN_GATEWAY=false
+      - OVPN_GATEWAY=true # 如果是放在网关上用，需要设置为true
     volumes:
-      - ./data:/data
+      - /srv/openvpn/data:/data
       - /etc/localtime:/etc/localtime:ro
+      - /srv/openvpn/logs:/var/log

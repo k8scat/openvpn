@@ -106,7 +106,7 @@ install_easyrsa() {
 }
 
 install_openvpnweb() {
-    wget https://github.com/gavintan/openvpn/releases/latest/download/openvpn-web-$(uname -s)-$(uname -m) -O /usr/local/bin/openvpn-web 
+    wget https://github.com/k8scat/openvpn/releases/latest/download/openvpn-web-$(uname -s)-$(uname -m) -O /usr/local/bin/openvpn-web 
 }
 
 
