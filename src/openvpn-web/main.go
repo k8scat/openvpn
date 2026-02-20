@@ -463,6 +463,9 @@ func main() {
 
 	r.Use(customLogger())
 	r.Use(gin.Recovery())
+	r.Use(gin.BasicAuth(gin.Accounts{
+		adminUsername: adminPassword,
+	}))
 
 	r.Use(sessions.Sessions("user_session", store))
 
