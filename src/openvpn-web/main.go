@@ -103,7 +103,7 @@ var (
 
 	db     *gorm.DB
 	logger = gLogger.New(
-		log.New(os.Stdout, "[OPENVPN-WEB] "+time.Now().Format("2006-01-02 15:04:05.000")+" MAIN ", 0),
+		log.New(os.Stdout, "[MANAGER] "+time.Now().Format("2006-01-02 15:04:05.000")+" MAIN ", 0),
 		gLogger.Config{
 			SlowThreshold:             time.Second,
 			LogLevel:                  gLogger.Error,

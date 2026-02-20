@@ -55,7 +55,7 @@ docker run -d \
   --cap-add=NET_ADMIN \
   -p 1194:1194/udp \
   -p 8833:8833 \
-  -e OVPN_GATEWAY=false \
+  -e OPENVPN_OVPN_GATEWAY=true \
   -e SYSTEM_BASE_ADMIN_USERNAME=admin \
   -e SYSTEM_BASE_ADMIN_PASSWORD=admin \
   -v /srv/openvpn/data:/data \
@@ -100,7 +100,46 @@ docker run -d \
   docker compose up -d
   ```
 
+### Docker Secret（Swarm 模式）
 
+Docker Secret 仅在 **Docker Swarm** 下可用，密码以只读文件形式挂载到容器的 `/run/secrets/`，由 entrypoint 自动注入为环境变量。
+
+**1. 初始化 Swarm（若未初始化）**
+
+```bash
+docker swarm init
+```
+
+**2. 创建 secret**
+
+```bash
+# 从 stdin 创建（推荐，不落盘）
+echo -n 'your_admin_password' | docker secret create admin_password -
+
+# 或从文件创建
+echo -n 'your_admin_password' > /tmp/admin_password
+docker secret create admin_password /tmp/admin_password
+rm /tmp/admin_password
+```
+
+**3. 使用 compose 部署 stack**
+
+```bash
+docker stack deploy -c docker-compose.swarm.yml openvpn
+```
+
+**4. 常用命令**
+
+```bash
+# 查看 secret 列表
+docker secret ls
+
+# 更新密码：先创建新 secret，再更新服务使用新 secret（需在 compose 中改 secret 名或滚动更新）
+# 删除旧 secret（需先从服务中移除）
+docker secret rm admin_password
+```
+
+镜像内已支持：若存在 `/run/secrets/admin_password` 且未设置环境变量 `SYSTEM_BASE_ADMIN_PASSWORD`，会自动从该文件读取并导出。因此 Swarm 部署时只需在 compose 中挂载 secret，无需再传密码环境变量。
 
 ## IPV6
 

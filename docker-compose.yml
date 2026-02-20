@@ -10,7 +10,7 @@ services:
     environment:
       - SYSTEM_BASE_ADMIN_USERNAME=admin
       - SYSTEM_BASE_ADMIN_PASSWORD=admin
-      - OVPN_GATEWAY=false # 如果是放在网关上用，需要设置为true
+      - OPENVPN_OVPN_GATEWAY=true # 如果是放在网关上用，需要设置为true，否则设置为false
     volumes:
       - /srv/openvpn/data:/data
       - /etc/localtime:/etc/localtime:ro
