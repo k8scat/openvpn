@@ -50,12 +50,8 @@ jobs:
           push: true
           platforms: |
             linux/amd64
-            linux/arm64
-            linux/arm/v6
-            linux/arm/v7
 
           build-args: |
             VERSION=${{ env.VERSION }}
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/openvpn:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/openvpn:${{ env.VERSION }}
