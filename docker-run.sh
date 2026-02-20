@@ -12,4 +12,4 @@ docker run -d \
   -v /srv/openvpn/data:/data \
   -v /srv/openvpn/logs:/var/log \
   -v /etc/localtime:/etc/localtime:ro \
-  k8scat/openvpn:latest
+  k8scat/openvpn:v2.5.4

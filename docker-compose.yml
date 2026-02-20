@@ -1,6 +1,6 @@
 services:
   openvpn:
-    image: k8scat/openvpn:latest
+    image: k8scat/openvpn:v2.5.4
     container_name: openvpn
     cap_add:
       - NET_ADMIN
