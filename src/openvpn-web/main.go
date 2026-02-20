@@ -463,9 +463,18 @@ func main() {
 
 	r.Use(customLogger())
 	r.Use(gin.Recovery())
-	r.Use(gin.BasicAuth(gin.Accounts{
+	basicAuthHandler := gin.BasicAuth(gin.Accounts{
 		adminUsername: adminPassword,
-	}))
+	})
+	r.Use(func(c *gin.Context) {
+		if c.Request.URL.Path == "/ovpn/login" || c.Request.URL.Path == "/ovpn/history" {
+			if c.ClientIP() == "127.0.0.1" || c.ClientIP() == "::1" {
+				c.Next()
+				return
+			}
+		}
+		basicAuthHandler(c)
+	})
 
 	r.Use(sessions.Sessions("user_session", store))
 
