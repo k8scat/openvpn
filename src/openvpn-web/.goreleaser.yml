@@ -5,15 +5,8 @@ builds:
     binary: openvpn-web
     goos:
       - linux
-      - windows
-      - darwin
     goarch:
       - amd64
-      - arm64
-      - arm
-    goarm:
-      - 6
-      - 7
     ignore:
       - goos: windows
         goarch: arm64
