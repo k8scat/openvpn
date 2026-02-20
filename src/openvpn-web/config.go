@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
-	"github.com/gavintan/gopkg/aes"
 	"github.com/spf13/viper"
 )
 
@@ -100,7 +100,9 @@ var (
 
 func initConfig() {
 	sk := genRandomString(50)
-	dp, _ := aes.AesEncrypt("admin", sk)
+
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.AutomaticEnv()
 
 	viper.SetDefault("system.base.site_url", "http://127.0.0.1:8833")
 	viper.SetDefault("system.base.web_port", "8833")
@@ -108,7 +110,7 @@ func initConfig() {
 	viper.SetDefault("system.base.server_cn", "ovpn_"+genRandomString(16))
 	viper.SetDefault("system.base.server_name", "server_"+genRandomString(16))
 	viper.SetDefault("system.base.admin_username", "admin")
-	viper.SetDefault("system.base.admin_password", dp)
+	viper.SetDefault("system.base.admin_password", "admin")
 	viper.SetDefault("system.base.auto_update_ovpn_config", false)
 	viper.SetDefault("system.base.max_duplicate_login", 0)
 	viper.SetDefault("system.base.history_max_days", 90)

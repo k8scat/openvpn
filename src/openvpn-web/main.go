@@ -424,36 +424,6 @@ func genRandomString(length int) string {
 	return string(result)
 }
 
-func AuthMiddleWare() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		session := sessions.Default(c)
-		user := session.Get("user")
-
-		if c.Request.URL.Path == "/ovpn/login" || c.Request.URL.Path == "/ovpn/history" {
-			if c.ClientIP() == "127.0.0.1" || c.ClientIP() == "::1" {
-				c.Next()
-				return
-			}
-		}
-
-		if user == nil {
-			c.Redirect(302, "/login")
-			c.Abort()
-			return
-		}
-
-		if user, ok := user.(string); ok {
-			if c.Request.URL.Path != "/" && !strings.HasPrefix(c.Request.URL.Path, "/client") && user != adminUsername {
-				c.Redirect(302, "/")
-				c.Abort()
-				return
-			}
-		}
-
-		c.Next()
-	}
-}
-
 func init() {
 	initConfig()
 	loadConfig()
@@ -490,32 +460,11 @@ func main() {
 	db.AutoMigrate(&User{}, &History{})
 
 	r := gin.New()
-	r.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
 
-		var statusColor, methodColor, resetColor string
-		if param.IsOutputColor() {
-			statusColor = param.StatusCodeColor()
-			methodColor = param.MethodColor()
-			resetColor = param.ResetColor()
-		}
-
-		if param.Latency > time.Minute {
-			param.Latency = param.Latency.Truncate(time.Second)
-		}
-		return fmt.Sprintf("[OPENVPN-WEB] %v GIN |%s %3d %s| %13v | %15s |%s %-7s %s %#v\n%s",
-			param.TimeStamp.Format("2006-01-02 15:04:05.000"),
-			statusColor, param.StatusCode, resetColor,
-			param.Latency,
-			param.ClientIP,
-			methodColor, param.Method, resetColor,
-			param.Path,
-			param.ErrorMessage,
-		)
-	}))
+	r.Use(customLogger())
+	r.Use(gin.Recovery())
 
 	r.Use(sessions.Sessions("user_session", store))
-
-	// r.Use(gin.Recovery())
 
 	templ := template.Must(template.New("").ParseFS(FS, "templates/*.html"))
 	r.SetHTMLTemplate(templ)
@@ -546,8 +495,7 @@ func main() {
 		c.ShouldBind(&u)
 
 		if u.Username == adminUsername {
-			dp, _ := aes.AesDecrypt(adminPassword, secretKey)
-			if u.Password == dp {
+			if u.Password == adminPassword {
 				session.Set("user", u.Username)
 				session.Save()
 

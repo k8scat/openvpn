@@ -1,15 +1,16 @@
 services:
   openvpn:
     image: k8scat/openvpn:latest
+    container_name: openvpn
     cap_add:
       - NET_ADMIN
     ports:
       - "1194:1194/udp"
       - "8833:8833"
     environment:
-      - ADMIN_USERNAME=admin
-      - ADMIN_PASSWORD=admin
-      - OVPN_GATEWAY=true # 如果是放在网关上用，需要设置为true
+      - SYSTEM_BASE_ADMIN_USERNAME=admin
+      - SYSTEM_BASE_ADMIN_PASSWORD=admin
+      - OVPN_GATEWAY=false # 如果是放在网关上用，需要设置为true
     volumes:
       - /srv/openvpn/data:/data
       - /etc/localtime:/etc/localtime:ro
